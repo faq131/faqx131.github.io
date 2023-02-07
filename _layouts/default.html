@@ -1,0 +1,40 @@
+<!DOCTYPE html lang="ru">
+<html lang="{{ site.lang | default: "en-US" }}">
+<head>
+    {% include head.html %}
+</head>
+<body>
+    <div class="page-layout">
+        <aside class="page-layout__sidebar" id="menu">
+            <nav>
+                <div class="mobile-show" style="text-align: center;">
+                    {% include pagetitle.html %}
+                </div>
+                <div class="toc-menu">
+                    {% include toc.html html=content %}
+                </div>
+            </nav>
+        </aside>
+        <main class="page-layout__content">
+            <div class="page-layout__content-inner">
+                <div style="position: relative;">
+                    <div style="position: relative; z-index: 5;">
+                        <div class="mobile-hide">
+                            {% include pagetitle.html %}
+                        </div>
+
+                        <form data-search="" style="padding: 8px 0;display: flex;position: sticky;top: 0;background: #fff;width: 100%;border-bottom: 1px solid #cecece;z-index: 10;">
+                            <input type="search" placeholder="Быстрый поиск" aria-label="Быстрый поиск" style="padding: 3px;">
+                            <button type="submit" style="white-space: pre;">Найти</button>
+                        </form>
+
+                        {{ content }}
+                        <a href="#menu" class="mobile-btn mobile-btn_menu">&#9776;</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% include scripts.html %}
+</body>
+</html>
