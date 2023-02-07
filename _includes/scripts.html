@@ -1,0 +1,164 @@
+<script type='module'>
+    window.onload = function() {
+        // if (window.location.search !== "?showClicks") {
+        //     return;
+        // }
+
+        import('https://unpkg.com/simple-statistics@7.7.0/index.js?module')
+            .then((obj) => {
+                const { 
+                    // median, 
+                    mean 
+                } = obj;
+                const staticticVersion = '?v1';
+                showClickStatistics(`https://daks01.github.io/FAQx81/heatmapdata-external-clicks.json${staticticVersion}`, mean);
+                // showClickStatistics('https://daks01.github.io/FAQx81/heatmapdata-internal-clicks.json', mean); 
+            });
+                
+    };
+ 
+    function showClickStatistics(url, mean) {
+        fetch(url)
+            .then((response) => {
+                if (response.status !== 200) {
+                    console.log('Status Code: ' + response.status);
+                    return;
+                }
+                response.json().then(function (data) {
+                    const counterList = data.map((e) => e['Количество переходов']);
+                    // const medianNumber = median(counterList);
+                    const centralNumber = mean(counterList);
+
+                    data.forEach((e) => {
+                        let src = e['Внешняя ссылка'].replace('https://daks01.github.io/FAQx81/','');
+                        
+                        let links = document.querySelectorAll(`a[href="${src}"]`);
+                        links.forEach((item) => {
+                            const number = e['Количество переходов'];
+                            if (!document.body.contains(item) 
+                                || number < centralNumber) {
+                                return;
+                            }
+                            const counter = `<sup title="🡕${number}">🔥</sup>`
+                            item.innerHTML += counter;
+                        });
+                    });
+                });
+            })
+            .catch(function (err) {
+                console.log('Error :-S', err);
+            });
+    }
+</script>
+
+<script>
+    (function () {
+        collapceMenu();
+        changeLinkTarget();
+        initSearch();
+
+        function collapceMenu() {
+            document.addEventListener('click', event => {
+                let submenu = event.target.nextElementSibling;
+
+                if (!event.target.matches('.toc-menu>ul>li>a')) {
+                    return;
+                }
+                if (document.body.contains(submenu)) {
+                    toggleElement(submenu);
+                }
+            }, false);
+
+            function toggleElement(el) {
+                window.getComputedStyle(el).display === 'none' ? el.style.display = 'block' : el.style.display = 'none';
+            }
+        }
+
+        function changeLinkTarget() {
+            let linksArr = document.querySelectorAll('a[href^="http"]');
+
+            linksArr.forEach(item => {
+                item.target = '_blank';
+            });
+        }
+        
+        function initSearch(){
+          var isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+
+          if (isMobile || !window.find) {
+             document.querySelector('form[data-search]').hidden = true;
+             return;
+          }
+
+          const searchForm = document.querySelector('form[data-search]');
+          const searchInput = searchForm.querySelector('input[type="search"]');
+          const searchButton = searchForm.querySelector('button[type="submit"]');
+
+          searchForm.addEventListener('submit', findString, false);
+          searchInput.addEventListener('input', countOccurrence, false);
+
+          function findString(event) {
+            event.preventDefault();
+            const searchQuery = searchInput.value.trim();
+            let isStrFound = window.find(searchQuery);
+
+            if (!isStrFound) {
+              isStrFound = window.find(searchQuery, 0, 1);
+              while (window.find(searchQuery, 0, 1)) continue;
+            }
+            return;
+          }
+
+          function countOccurrence() {
+            const searchQuery = searchInput.value.trim();   
+
+            if (searchQuery.length === 0) {
+              searchButton.innerText = `Найти`;
+              return;
+            }
+
+            const pageContent = document.body.innerText;
+            const regex = new RegExp(searchQuery, 'gi');
+            const count = (pageContent.match(regex) || []).length;
+
+            searchButton.innerText = `Далее из ${count}`;
+          }
+        }
+
+    }());
+</script>
+
+<style>
+    sup.green {
+        font-size: 70%;
+        color: rgb(6, 168, 6);
+    }
+    sup.gray {
+        color: rgb(167, 167, 167);
+    }
+    sup.red {
+        color: rgb(196, 2, 2);
+    }
+    a:hover sup {
+        text-decoration: none;
+    }
+</style>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   var z = null;m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(51819752, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true,
+        trackHash:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/51819752" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
